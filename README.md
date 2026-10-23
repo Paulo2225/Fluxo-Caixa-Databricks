@@ -94,6 +94,10 @@ Cada camada foi implementada em um notebook separado, mantendo a mesma lógica d
 
 **Motivo da decisão:** Seguir essa estrutura desde o início evita misturar arquivo bruto com tabela processada, e é o padrão atualmente recomendado pela própria Databricks para organização de dados.
 
+**Estrutura no Catalog do Databricks**
+
+![Estrutura no Catalog do Databricks](Imagens/01_estrutura_catalog.png)
+
 ---
 
 ### 4.2 Camada Bronze — Leitura dos Arquivos Excel
@@ -116,6 +120,10 @@ for nome in arquivos:
 **Explicação técnica:** O Spark não lê arquivos `.xlsx` nativamente, por isso a leitura é feita com `pandas` (`pd.read_excel`), e o resultado é convertido para um DataFrame do Spark com `spark.createDataFrame`, que é então gravado como tabela Delta (`saveAsTable`). O laço `for` evita repetir o mesmo bloco de código para cada um dos quatro arquivos.
 
 **Motivo da decisão:** Manter uma camada bruta, sem tratamento, permite voltar ao dado original a qualquer momento caso alguma transformação posterior precise ser revista ou auditada.
+
+**Execução da camada Bronze**
+
+![Execução da camada Bronze](Imagens/02_bronze_tabelas.png.png)
 
 ---
 
@@ -149,6 +157,10 @@ df_mov_silver.write.format("delta").mode("overwrite") \
 **Motivo da decisão:** Depender apenas do nome do banco como texto é frágil — qualquer inconsistência de digitação quebraria comparações futuras. Trazer o `Banco_ID` a partir de uma tabela de referência (dimensão) torna o relacionamento mais confiável, seguindo a mesma lógica de chave estrangeira usada no projeto anterior em SQL Server.
 
 O mesmo padrão de limpeza (remoção de duplicatas, padronização de texto, checagem de nulos) foi aplicado também às tabelas `silver_planocontas` e `silver_saldoanterior`.
+
+**Tabela `silver_movimentos` com o `Banco_ID` resolvido**
+
+![Tabela silver_movimentos](Imagens/03_silver_movimentos.png.png)
 
 ---
 
@@ -196,6 +208,10 @@ df_saldo_final.write.format("delta").mode("overwrite") \
 **Explicação técnica:** `groupBy` agrupa os dados pelas dimensões desejadas (ano, mês, banco, tipo), e `agg(_sum(...))` soma os valores dentro de cada grupo. A função `round()` foi aplicada para eliminar erro de ponto flutuante, comum em somas de valores decimais no Spark. No cálculo do saldo final, um segundo `join` relaciona o total movimentado por banco com o saldo inicial (`silver_saldoanterior`), e o saldo final é obtido somando as duas colunas.
 
 **Motivo da decisão:** A camada Gold existe para entregar o dado já pronto para consumo — sem essa camada, o Power BI precisaria repetir a mesma lógica de agregação em DAX ou Power Query, duplicando trabalho e regra de negócio em dois lugares diferentes.
+
+**Resultado da tabela `gold_saldo_final`**
+
+![Tabela gold_saldo_final](Imagens/04_gold_saldo_final.png.png)
 
 ---
 
