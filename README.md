@@ -123,7 +123,7 @@ for nome in arquivos:
 
 **Execução da camada Bronze**
 
-![Execução da camada Bronze](Imagens/02_bronze_tabelas.png.png)
+![Execução da camada Bronze](Imagens/02_bronze_tabelas.png)
 
 ---
 
@@ -160,7 +160,7 @@ O mesmo padrão de limpeza (remoção de duplicatas, padronização de texto, ch
 
 **Tabela `silver_movimentos` com o `Banco_ID` resolvido**
 
-![Tabela silver_movimentos](Imagens/03_silver_movimentos.png.png)
+![Tabela silver_movimentos](Imagens/03_silver_movimentos.png)
 
 ---
 
@@ -211,7 +211,7 @@ df_saldo_final.write.format("delta").mode("overwrite") \
 
 **Resultado da tabela `gold_saldo_final`**
 
-![Tabela gold_saldo_final](Imagens/04_gold_saldo_final.png.png)
+![Tabela gold_saldo_final](Imagens/04_gold_saldo_final.png)
 
 ---
 
